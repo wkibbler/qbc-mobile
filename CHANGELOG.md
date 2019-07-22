@@ -1,4 +1,4 @@
-**BitcoinSubsidium Android/iOS Wallet CHANGELOG**
+**Quebecoin Android/iOS Wallet CHANGELOG**
 -------------------------
 
 **v1.0.1**

@@ -21,7 +21,7 @@ export default class Home extends React.Component {
       super()
       this.state = {
          BTCprice: '0.00000000',
-         BitcoinSubsidiumprice: '0.00000000',
+         Quebecoinprice: '0.00000000',
          blockHeight: '0',
          fontLoaded: false,
          balance: "",
@@ -92,7 +92,7 @@ export default class Home extends React.Component {
       </View>
       <Text style={styles.balance1}>BALANCE</Text>
       <Text style={[styles.balanceTitle, {fontFamily: 'made-evolve-light'}]}>{this.state.balance}</Text>
-      <Text style={[styles.balance1, {marginTop: 5}]}>XBTS</Text>
+      <Text style={[styles.balance1, {marginTop: 5}]}>QBC</Text>
       <View style={styles.btnContainers}>
       <View style={styles.stBtnCon}>
       <GradientButton

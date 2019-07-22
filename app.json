@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "BitcoinSubsidium-wallet",
-    "slug": "BitcoinSubsidium-wallet",
+    "name": "Quebecoin-wallet",
+    "slug": "Quebecoin-wallet",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
@@ -27,7 +27,7 @@
       "bundleIdentifier": "com.xbts.dynamic"
     },
     "android": {
-      "package": "com.BitcoinSubsidium.wallet",
+      "package": "com.Quebecoin.wallet",
       "versionCode": 1
     },
     "description": ""
