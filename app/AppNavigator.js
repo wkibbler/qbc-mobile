@@ -9,12 +9,6 @@ import Receive from './Receive';
 import Settings from './Settings';
 
 const RootStack = createStackNavigator({
-    Login: {
-      screen: Login,
-      navigationOptions: {
-        header: null,
-      }
-    },
     Home: {
       screen: Home,
       navigationOptions: {

@@ -27,14 +27,14 @@ export default {
     marginTop: 20
   },
   logo: {
-    height: 50,
-    width: 180,
+    height: 35,
+    width: 200,
     marginTop: 25
   },
   container: {
       padding: 10,
       marginTop: 20,
-      backgroundColor: '#8e722e',
+      backgroundColor: '#04339b',
       alignItems: 'center',
       borderRadius: 30
    },
@@ -124,5 +124,13 @@ export default {
    },
    restore: {
      fontFamily: 'made-evolve-light'
-   }
+   },
+   input: {
+     width: '60%',
+     height: 30,
+     color: 'white',
+     backgroundColor: '#04339b',
+     fontFamily: 'made-evolve-thin',
+     borderRadius: 15
+   },
 }

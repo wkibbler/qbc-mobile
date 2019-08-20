@@ -1,5 +1,4 @@
 import React from 'react';
-import axios from 'axios';
 import {
   Text,
   View,
@@ -11,7 +10,18 @@ import {
   ScrollView,
   Linking} from 'react-native';
   import GradientButton from 'react-native-gradient-buttons';
-  import { Font, SecureStore } from 'expo';
+  import { Font, SecureStore, Localization } from 'expo';
+  import i18n from 'i18n-js';
+
+/*import different languages*/
+
+import en from './locals/en'
+
+import fr from './locals/fr'
+
+i18n.fallbacks = true;
+i18n.translations = { en, fr };
+i18n.locale = Localization.locale;
 
 
 import styles from './styles/Home';
@@ -30,42 +40,49 @@ export default class Home extends React.Component {
       }
    }
    openTx(txid){
-     Linking.openURL('http://176.9.64.121:3001/tx/' + txid)
+     Linking.openURL('http://155.138.220.104:11889/tx/' + txid)
    }
-   sendReceive(variable){
-     if (variable == this.state.address) {return "SENT"} else {return "RECEIVED"}
+   async sendReceive(txid){
+     var address = await SecureStore.getItemAsync('address')
+     return fetch('http://155.138.220.104:11889/api/v1/tx/' + txid)
+     .then((response) => response.json())
+     .then((responseJson) => {
+       if (responseJson.vin[0].addresses[0] == address){
+         return "SEND"
+       } else {
+         return "RECEIVE"
+       }
+     })
+     .catch((error) => {
+       return "error"
+     })
    }
+
+   txValue(txid){
+     return "some value"
+   }
+
    async balance(){
      var address = await SecureStore.getItemAsync('address')
      if (address !== null){
        this.setState({address: address})
-       return fetch('http://176.9.64.121:3001/api/addr/' + address + "/balance")
+       return fetch('http://155.138.220.104:11889/api/v1/address/' + address)
        .then((response) => response.json())
        .then((responseJson) => {
-           this.setState({balance: (responseJson / 100000000).toFixed(4)})
+           this.setState({balance: (JSON.parse(responseJson.balance)).toFixed(4)})
+           if (typeof responseJson.transactions == 'undefined'){
+             this.setState({transactions: []})
+           } else {
+             this.setState({transactions: responseJson.transactions})
+           }
        })
        .catch((error) => {
-         this.setState({balance: (0).toFixed(4)});
+         console.log(error)
+         this.setState({balance: (0).toFixed(4), transactions: []});
          console.log(address)
        })
      } else {
-       this.setState({balance: (0).toFixed(4)})
-     }
-     }
-     async transactions(){
-       var address = await SecureStore.getItemAsync('address')
-       if (address !== null){
-       return fetch('http://176.9.64.121:3001/api/txs/?address=' + address)
-       .then((response) => response.json())
-       .then((responseJson) => {
-           this.setState({transactions: responseJson.txs})
-
-       })
-       .catch((error) => {
-         console.error(error);
-       });
-     } else {
-       this.setState({balance: (0).toFixed(4)})
+       this.setState({balance: (0).toFixed(4), transactions: []})
      }
      }
    async componentDidMount() {
@@ -75,10 +92,8 @@ export default class Home extends React.Component {
      });
      this.setState({ fontLoaded: true });
      this.balance()
-     this.transactions()
      this.interval = setInterval(() => {
-       this.balance();
-     this.transactions()}, 10000);
+       this.balance();}, 10000);
    }
   render() {
     return (
@@ -90,7 +105,7 @@ export default class Home extends React.Component {
       source={require('../assets/headerLogo.png')}
       style={styles.logo}/>
       </View>
-      <Text style={styles.balance1}>BALANCE</Text>
+      <Text style={styles.balance1}>{i18n.t('1')}</Text>
       <Text style={[styles.balanceTitle, {fontFamily: 'made-evolve-light'}]}>{this.state.balance}</Text>
       <Text style={[styles.balance1, {marginTop: 5}]}>QBC</Text>
       <View style={styles.btnContainers}>
@@ -99,15 +114,15 @@ export default class Home extends React.Component {
       style={{ marginVertical: 8, marginLeft: 40 }}
       textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
       textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-      gradientBegin="#8e722e"
-      gradientEnd="#e2dda4"
+      gradientBegin="#04339b"
+      gradientEnd="#91b8fa"
       gradientDirection="diagonal"
       height={30}
       width={90}
       radius={15}
       impact
       impactStyle='Light'
-      text="Send"
+      text={i18n.t('2')}
       onPressAction={() => this.props.navigation.navigate('Send')}
     />
       </View>
@@ -127,39 +142,30 @@ export default class Home extends React.Component {
       style={{ marginVertical: 8, marginRight: 40 }}
       textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
       textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-      gradientBegin="#8e722e"
-      gradientEnd="#e2dda4"
+      gradientBegin="#04339b"
+      gradientEnd="#91b8fa"
       gradientDirection="diagonal"
       height={30}
       width={90}
       radius={15}
       impact
       impactStyle='Light'
-      text="Receive"
+      text={i18n.t('3')}
       onPressAction={() => this.props.navigation.navigate('Receive')}
     />
       </View>
       </View>
       <View style={styles.op2}>
-      <Text style={[styles.ltTitle, {fontFamily: 'made-evolve-light'}]}>LATEST TRANSACTIONS</Text>
+      <Text style={[styles.ltTitle, {fontFamily: 'made-evolve-light'}]}>{i18n.t('4')}</Text>
       <ScrollView style={styles.scroll}>
       {
         this.state.transactions.map((item, index) => (
           <TouchableOpacity
-          key = {item.txid}
+          key = {item}
           style={styles.trasactionContainer}
-          onPress = {() => this.openTx(item.txid)}>
+          onPress = {() => this.openTx(item)}>
           <Text style={styles.transaction}>
-          <Text style={{fontFamily: 'made-evolve-light', fontSize: 20}}>{this.sendReceive(item.vin[0].addr)}</Text>
-          </Text>
-          <Text style={styles.transaction}>
-          <Text>Time: </Text><Text style={{fontFamily: 'made-evolve-light'}}>{new Date(item.time * 1000).toLocaleString()}</Text>
-          </Text>
-          <Text style={styles.transaction}>
-          <Text>ID: </Text><Text style={{fontFamily: 'made-evolve-light'}}>{item.txid}</Text>
-          </Text>
-          <Text style={styles.transaction}>
-          <Text>Value: </Text><Text style={{fontFamily: 'made-evolve-light'}}>{item.vout[0].value}</Text>
+          <Text>{i18n.t('5')} </Text><Text style={{fontFamily: 'made-evolve-light'}}>{item}</Text>
           </Text>
           </TouchableOpacity>
         ))

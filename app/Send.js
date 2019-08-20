@@ -1,9 +1,20 @@
 import React from 'react';
 import { Text, View, ImageBackground, Button, Alert, TouchableOpacity, Image, TextInput, StyleSheet, Linking, Dimensions, LayoutAnimation, StatusBar } from 'react-native';
 import GradientButton from 'react-native-gradient-buttons';
-import { Font, Permissions, BarCodeScanner, SecureStore } from 'expo';
+import { Font, Permissions, BarCodeScanner, SecureStore, Localization } from 'expo';
 import Modal from 'react-native-modal';
 import Spinner from 'react-native-loading-spinner-overlay';
+
+import i18n from 'i18n-js';
+
+/*import different languages*/
+
+import en from './locals/en'
+import fr from './locals/fr'
+
+i18n.fallbacks = true;
+i18n.translations = { en, fr };
+i18n.locale = Localization.locale;
 
 
 import styles from './styles/Send';
@@ -30,17 +41,24 @@ export default class Send extends React.Component {
    send = async () => {
      var address = await SecureStore.getItemAsync('address')
      var privKey = await SecureStore.getItemAsync('privateKey')
-     var sendJson = {send: this.state.address, from: address, privKey: privKey, amount: this.state.amount, balance: this.state.balance * 100000000}
+     var sendJson = {send: this.state.address, from: address, privKey: privKey, amount: this.state.amount, balance: this.state.balance}
      console.log(JSON.stringify(sendJson))
-     return fetch('http://176.9.64.121:3000/send/xbts/' + JSON.stringify(sendJson))
+     return fetch('http://54.39.201.117:3001/send/qbc/' + JSON.stringify(sendJson))
      .then((response) => response.json())
      .then((responseJson) => {
+       console.log(responseJson)
        this.setState({spinner: false})
-       Alert.alert(responseJson.alert, responseJson.message)
+       if (responseJson.alertCode == 1){
+         if (responseJson.messageCode == 2) { Alert.alert(i18n.t('9'), i18n.t('44')) }
+         else if (responseJson.messageCode == 3 ) { Alert.alert(i18n.t('9'), i18n.t('13')) }
+         else if (responseJson.messageCode == 4 ) { Alert.alert(i18n.t('9'), i18n.t('10')) }
+       }
+       else if (responseJson.alertCode == 2) { Alert.alert(i18n.t('12'), responseJson.message) }
      })
      .catch((error) => {
+       console.log(error)
        this.setState({spinner: false})
-       Alert.alert("error", "There was an error reaching our server")
+       Alert.alert(i18n.t('9'), i18n.t('45'));
      });
    }
    _openQrScanner = () => {
@@ -72,11 +90,11 @@ export default class Send extends React.Component {
   async balance(){
     var address = await SecureStore.getItemAsync('address')
     if (address !== null){
-      return fetch('http://176.9.64.121:3001/api/addr/' + address + "/balance")
+      return fetch('http://155.138.220.104:11889/api/v1/address/' + address)
       .then((response) => response.json())
       .then((responseJson) => {
-        if (typeof responseJson == 'number'){
-          this.setState({balance: (responseJson / 100000000).toFixed(4)})
+        if (typeof responseJson.balance !== 'undefined'){
+          this.setState({balance: (JSON.parse(responseJson.balance)).toFixed(4)})
         } else {
           this.setState({balance: (0).toFixed(4)})
         }
@@ -115,7 +133,7 @@ export default class Send extends React.Component {
     style={styles.backIcon}/>
     </TouchableOpacity>
     <View style={styles.op1}>
-    <Text style={styles.title}>SEND</Text>
+    <Text style={styles.title}>{i18n.t('6')}</Text>
     <View style={styles.balanceWrapper}>
     <View style={styles.balance}>
     <Text style={styles.balanceDis}>{this.state.balance}</Text>
@@ -126,7 +144,7 @@ export default class Send extends React.Component {
         style={styles.input}
         onChangeText={(address) => this.setState({address})}
         value={this.state.address}
-        placeholder={"Enter Address"}
+        placeholder={i18n.t('7')}
         placeholderTextColor={"white"}
       />
       <TouchableOpacity onPress={() => {
@@ -151,21 +169,21 @@ export default class Send extends React.Component {
         </TouchableOpacity>
         </View>
         <View style={styles.sliderWrapper}>
-        <Text style={styles.feeDis}>{"Fee: " + this.state.fee}</Text>
+        <Text style={styles.feeDis}>{i18n.t('8') + this.state.fee}</Text>
         </View>
         <View style={styles.sendWrapper}>
         <GradientButton
         style={styles.sendBtn}
         textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-        gradientBegin="#8e722e"
-        gradientEnd="#e2dda4"
+        gradientBegin="#04339b"
+        gradientEnd="#91b8fa"
         gradientDirection="diagonal"
         height={40}
         width={100}
         radius={30}
         impact
         impactStyle='Light'
-        text="Send"
+        text={i18n.t('2')}
         onPressAction={() => {
           this.setState({spinner: true})
            this.send()
@@ -189,7 +207,7 @@ export default class Send extends React.Component {
             :
 
             <BarCodeScanner
-                onBarCodeRead={this._handleBarCodeRead}
+                onBarCodeScanned={this._handleBarCodeRead}
                 style={{
                   height: '80%',
                   width: Dimensions.get('window').width,

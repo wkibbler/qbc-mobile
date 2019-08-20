@@ -9,8 +9,8 @@ export default {
     height: '100%'
   },
   logo: {
-    height: 50,
-    width: 180,
+    height: 35,
+    width: 200,
     marginTop: 50
   },
   logoWrapper: {
@@ -32,7 +32,7 @@ export default {
     alignItems: 'center'
   },
   balance: {
-    backgroundColor: '#ccaa55',
+    backgroundColor: '#04339b',
     borderRadius: 30,
     width: '80%',
     height: 60,
@@ -58,7 +58,7 @@ export default {
     borderBottomLeftRadius: 15,
     borderTopLeftRadius: 15,
     color: 'white',
-    backgroundColor: '#ccaa55',
+    backgroundColor: '#04339b',
     fontFamily: 'made-evolve-thin'
   },
   inputWrapper: {

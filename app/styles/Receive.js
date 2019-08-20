@@ -27,8 +27,8 @@ export default {
     marginTop: 20
   },
   logo: {
-    height: 50,
-    width: 180,
+    height: 35,
+    width: 200,
     marginTop: 25
   },
   container: {
@@ -170,7 +170,7 @@ export default {
      backgroundColor: 'white',
      alignItems: 'center',
      borderRadius: 30,
-     backgroundColor: '#ccaa55'
+     backgroundColor: '#04339b'
    },
    modalMsg: {
      color: 'white',

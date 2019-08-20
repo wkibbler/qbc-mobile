@@ -3,8 +3,18 @@ import { Text, View, ImageBackground, Button, Alert, TouchableOpacity, Image, Te
 import GradientButton from 'react-native-gradient-buttons';
 import Modal from 'react-native-modal';
 import QRCode from 'react-native-qrcode-svg';
-import { SecureStore } from 'expo'
+import { SecureStore, Localization } from 'expo'
 import styles from './styles/Receive'
+import i18n from 'i18n-js';
+
+/*import different languages*/
+
+import en from './locals/en'
+import fr from './locals/fr'
+
+i18n.fallbacks = true;
+i18n.translations = { en, fr };
+i18n.locale = Localization.locale;
 
 export default class Receive extends React.Component {
   constructor() {
@@ -39,14 +49,14 @@ export default class Receive extends React.Component {
    }
    requestKeyPair = async () => {
      var data = "somedata" + this.state.username + "moredata" + this.state.password;
-     return fetch('http://176.9.64.121:3000/keyPair/xbts/' + data)
+     return fetch('http://54.39.201.117:3001/keyPair/qbc/' + data)
     .then((response) => response.json())
     .then((responseJson) => {
       console.log(responseJson.address)
       SecureStore.setItemAsync('address', responseJson.address)
       SecureStore.setItemAsync('privateKey', responseJson.privateKey)
       this.setState({address: responseJson.address, renderMain: true, privateKey: responseJson.privateKey})
-      Alert.alert("Warning", "Always make sure you backup your wallet or you risk losing your funds")
+      Alert.alert(i18n.t('14'), i18n.t('15'))
     })
     .catch((error) => {
       console.error(error);
@@ -57,7 +67,7 @@ export default class Receive extends React.Component {
       var privatekey = await SecureStore.getItemAsync('privateKey')
       if (address !== null){
         this.setState({renderMain: true, address: address, privateKey: privatekey})
-        Alert.alert("Warning", "Always make sure you backup your wallet or you risk losing your funds")
+        Alert.alert(i18n.t('14'), i18n.t('15'))
       } else {
         this.setState({modalView: true})
       }
@@ -68,36 +78,36 @@ export default class Receive extends React.Component {
       <Modal isVisible={this.state.modalView}>
       <View style={styles.modal}>
       <View style={styles.modal1}>
-      <Text style={styles.modalMsg}>Enter a username and password, this is only used to generate your wallet and you will not need to use it to sign in and it will not be stored anywhere even on your device.</Text>
-      <Text style={styles.modalMsg}>Make sure that you are able to remember your credentials as they will be used to backup your wallet in future and there is no option to reset user credentials</Text>
-      <Text style={styles.modalMsg}>If you are trying to restore from backup, enter the same credentials below and your wallet will be imported to this device</Text>
+      <Text style={styles.modalMsg}>{i18n.t('37')}</Text>
+      <Text style={styles.modalMsg}>{i18n.t('38')}</Text>
+      <Text style={styles.modalMsg}>{i18n.t('39')}</Text>
       <TextInput
           style={styles.input}
           onChangeText={(username) => this.setState({username})}
           value={this.state.username}
-          placeholder={"Username"}
+          placeholder={i18n.t('40')}
           placeholderTextColor={"grey"}
         />
         <TextInput
             style={styles.input}
             onChangeText={(password) => this.setState({password})}
             value={this.state.password}
-            placeholder={"Password"}
+            placeholder={i18n.t('41')}
             placeholderTextColor={"grey"}
           />
           <Text style={styles.goBack1} onPress={()=> this.cancel()}>Go Back</Text>
           <GradientButton
           style={{marginTop: 30}}
           textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-          gradientBegin="#8e722e"
-          gradientEnd="#e2dda4"
+          gradientBegin="#04339b"
+          gradientEnd="#91b8fa"
           gradientDirection="diagonal"
           height={40}
           width={130}
           radius={30}
           impact
           impactStyle='Light'
-          text="Create Wallet"
+          text={i18n.t('47')}
           onPressAction={() => this.getAddress()}
         />
       </View>
@@ -117,7 +127,7 @@ export default class Receive extends React.Component {
       style={styles.backIcon}/>
       </TouchableOpacity>
     <View style={styles.op1}>
-    <Text style={styles.title}>RECEIVE</Text>
+    <Text style={styles.title}>{i18n.t('16')}</Text>
     <View style={styles.qrWrapper}>
     <TouchableOpacity onPress={() => this.qrSize()}>
     <QRCode
@@ -131,34 +141,34 @@ export default class Receive extends React.Component {
     <GradientButton
     style={{ marginVertical: 8 }}
     textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-    gradientBegin="#8e722e"
-    gradientEnd="#e2dda4"
+    gradientBegin="#04339b"
+    gradientEnd="#91b8fa"
     gradientDirection="diagonal"
     height={30}
     width={90}
     radius={15}
     impact
     impactStyle='Light'
-    text="Copy"
+    text={i18n.t('17')}
     onPressAction={() => {
-      Alert.alert('Copied to Clipboard')
+      Alert.alert(i18n.t('19'))
       Clipboard.setString(this.state.address);
     }}
   />
   <GradientButton
   style={{ marginVertical: 8 }}
   textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
-  gradientBegin="#8e722e"
-  gradientEnd="#e2dda4"
+  gradientBegin="#04339b"
+  gradientEnd="#91b8fa"
   gradientDirection="diagonal"
   height={30}
   width={90}
   radius={15}
   impact
   impactStyle='Light'
-  text="Backup"
+  text={i18n.t('18')}
   onPressAction={() => {
-    Alert.alert("Copied private key to clipboard")
+    Alert.alert(i18n.t('20'))
     Clipboard.setString(this.state.privateKey);
   }}
 />
@@ -171,7 +181,7 @@ export default class Receive extends React.Component {
     <Image
     style={styles.warningIcon}
     source={require('../assets/warning.png')}/>
-    <Text style={styles.warning}>You do not have connection to the internet. Please connect and try again. You will not have to do this again after the wallet setup</Text>
+    <Text style={styles.warning}>{i18n.t('42')}</Text>
     <GradientButton
     style={{ marginVertical: 8 }}
     textStyle={{ fontSize: 15, fontFamily: 'made-evolve-thin' }}
@@ -183,7 +193,7 @@ export default class Receive extends React.Component {
     radius={15}
     impact
     impactStyle='Light'
-    text="Try Again"
+    text={i18n.t('43')}
     onPressAction={() => this.getAddress()}
   />
     </View>

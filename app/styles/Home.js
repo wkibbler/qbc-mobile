@@ -34,8 +34,8 @@ export default {
     height: '100%'
   },
   logo: {
-    height: 50,
-    width: 180,
+    height: 35,
+    width: 200,
     marginTop: 30
   },
   logoWrapper: {
@@ -48,7 +48,7 @@ export default {
     height: 20
   },
   balanceTitle: {
-    color: '#8e722e',
+    color: '#04339b',
     fontSize: 60,
     textAlign: 'center',
     marginTop: 5,
